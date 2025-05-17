@@ -3,7 +3,7 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8">
-  <title>Prime MMA 12 - Multimedialna transmisja</title>
+  <title>Prime MMA 12 - Transmisja na żywo</title>
   <style>
     body {
       background-color: #0a0a0a;
@@ -12,19 +12,36 @@
       text-align: center;
       padding: 30px;
     }
+    .branding {
+      font-size: 28px;
+      font-weight: bold;
+      color: #ff2e63;
+      margin-bottom: 10px;
+    }
     .player {
-      background: #000;
+      position: relative;
+      background: #000 url('https://upload.wikimedia.org/wikipedia/commons/7/7f/Black_background.jpg') center center no-repeat;
+      background-size: cover;
       width: 90%;
       max-width: 960px;
       height: 540px;
       margin: 0 auto 20px;
       border: 4px solid #333;
-      position: relative;
+      overflow: hidden;
+    }
+    .buffer-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 6px;
+      background: linear-gradient(to right, #ff2e63, #ff5858);
+      width: 0%;
+      transition: width 1s linear;
     }
     .controls {
-      margin-top: 20px;
+      margin-top: 15px;
     }
-    .controls button {
+    .controls button, .controls select, .controls input[type=range] {
       background-color: #222;
       border: 1px solid #555;
       padding: 10px 15px;
@@ -32,79 +49,159 @@
       font-weight: bold;
       border-radius: 6px;
       cursor: pointer;
-      margin: 6px;
-      width: 80%;
-      max-width: 600px;
+      margin: 5px;
     }
-    .controls button:hover {
+    .controls button:hover, .controls select:hover {
       background-color: #333;
     }
-    .status {
-      font-size: 18px;
-      margin: 10px 0;
+    .volume-container {
+      display: inline-block;
+      margin-left: 10px;
+    }
+    .viewer-count, .transmission-time {
+      margin-top: 10px;
+      font-size: 16px;
       color: #ffcc00;
     }
-    .error {
-      color: red;
-      font-size: 16px;
+    .source-button {
       margin-top: 10px;
+      width: 90%;
+      max-width: 600px;
+      padding: 10px;
+      font-weight: bold;
+      color: #fff;
+      background-color: #222;
+      border: 1px solid #444;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .source-button:hover {
+      background-color: #333;
     }
   </style>
 </head>
 <body>
-  <h1>🔴 Łączenie z transmisją Prime MMA 12</h1>
-  <div class="player" id="streamBox">
-    <p style="padding-top: 240px;">Ładowanie transmisji...</p>
+  <div class="branding">🔥 PRIME MMA 12 – Gala na żywo</div>
+  <div class="player" id="playerBox">
+    <div id="bufferBar" class="buffer-bar"></div>
+    <p style="padding-top: 240px;" id="playerStatus">Transmisja buforuje...</p>
   </div>
-  <div class="status" id="statusMsg">Wybierz źródło transmisji</div>
-  <div class="status">Oczekiwany czas połączenia: <span id="timer">--:--</span></div>
-  <div class="controls">
-    <button onclick="muteToggle()">🔈 Wycisz / Przywróć dźwięk</button>
-  </div>
-  <div id="sources" class="controls">
-    <button onclick="connectSource(1)">Źródło 1 (639 oglądających) - ✅ Transmisja online</button><br>
-<button onclick="connectSource(2)">Źródło 2 (1639 oglądających) - ✅ Transmisja online</button><br>
-<button onclick="connectSource(3)">Źródło 3 (1792 oglądających) - ✅ Transmisja online</button><br>
-<button onclick="connectSource(4)">Źródło 4 (1659 oglądających) - ❌ Transmisja offline</button><br>
-<button onclick="connectSource(5)">Źródło 5 (1600 oglądających) - ❌ Transmisja offline</button><br>
-<button onclick="connectSource(6)">Źródło 6 (1477 oglądających) - ✅ Transmisja online</button><br>
-<button onclick="connectSource(7)">Źródło 7 (1121 oglądających) - ✅ Transmisja online</button><br>
-<button onclick="connectSource(8)">Źródło 8 (2152 oglądających) - ✅ Transmisja online</button><br>
 
+  <div class="controls">
+    <button onclick="playStream()">▶️ Odtwórz</button>
+    <button onclick="pauseStream()">⏸️ Zatrzymaj</button>
+    <button onclick="toggleFullscreen()">🔳 Pełny ekran</button>
+    <select id="qualitySelect" onchange="changeQuality()">
+      <option value="720p">Jakość: 720p</option>
+      <option value="1080p">Jakość: Full HD</option>
+    </select>
+    <div class="volume-container">
+      Głośność: <input type="range" min="0" max="100" value="100" id="volumeSlider" onchange="changeVolume()">
+      <span id="volumeLabel">100%</span>
+    </div>
   </div>
-  <div class="error" id="errorMsg"></div>
+
+  <div class="transmission-time">⏱️ Czas trwania transmisji: <span id="transmissionClock">00:00</span></div>
+  <div class="viewer-count" id="mainViewerCount">👁️ Oglądających: <span id="mainViewer">0</span></div>
+
+  <div class="controls" id="sourceButtons">
+    <!-- Źródła będą dodawane dynamicznie -->
+  </div>
 
 <script>
-  let muted = false;
-  let connectionTime = Math.floor(Math.random() * (300 - 5 + 1)) + 5;
-  let currentSource = null;
+  let bufferProgress = 0;
+  let playing = false;
+  let viewerCount = Math.floor(Math.random() * 1500) + 500;
+  let currentVolume = 100;
+  let transmissionSeconds = 0;
 
-  function updateTimer() {
-    const mins = Math.floor(connectionTime / 60);
-    const secs = connectionTime % 60;
-    document.getElementById('timer').textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
-    if (connectionTime > 0) {
-      connectionTime--;
-      setTimeout(updateTimer, 1000);
-    } else {
-      const errors = ['Błąd 502: Gateway Timeout – problem z serwerem nadrzędnym.', 'Błąd połączenia: serwer odrzucił żądanie z powodu aktywnego VPN.', 'Transmisja zablokowana: połączenie wykryte jako pochodzące z serwera Wykop.', 'Nieprawidłowa sygnatura strumienia – sprawdź certyfikat SSL.', 'Odmowa dostępu – zbyt wielu użytkowników z tego regionu.', 'Wewnętrzny błąd odtwarzacza multimedialnego.', 'Problem z buforowaniem danych z serwera edge.', 'Zbyt wiele przekierowań – możliwe użycie tunelu proxy.', 'Wersja wtyczki stream niezgodna z wersją przeglądarki.', 'Błąd dekodowania źródła audio – spróbuj wyciszyć i włączyć ponownie.', 'Nieobsługiwany typ kodeka: H.266/Versatile Video Coding.', 'Błąd handshake – problem z autoryzacją serwera.', 'Zasób niedostępny – łączenie przez TOR zostało zablokowane.', 'Zablokowane połączenie z niestandardowej aplikacji mobilnej.', 'Serwer wymaga uwierzytelnienia dwuskładnikowego – przerwane.'];
-      document.getElementById('errorMsg').textContent = errors[Math.floor(Math.random() * errors.length)];
+  const viewerDisplay = document.getElementById('mainViewer');
+  const playerStatus = document.getElementById('playerStatus');
+  const bufferBar = document.getElementById('bufferBar');
+  const qualitySelect = document.getElementById('qualitySelect');
+  const sourceButtons = document.getElementById('sourceButtons');
+  const volumeSlider = document.getElementById('volumeSlider');
+  const volumeLabel = document.getElementById('volumeLabel');
+  const playerBox = document.getElementById('playerBox');
+  const clockDisplay = document.getElementById('transmissionClock');
+
+  const sourceViewerCounts = Array.from({ length: 8 }, () => Math.floor(Math.random() * 2000) + 100);
+
+  function updateViewers() {
+    viewerCount += Math.floor(Math.random() * 10 - 5);
+    viewerCount = Math.max(0, viewerCount);
+    viewerDisplay.textContent = viewerCount;
+
+    const buttons = document.querySelectorAll('.source-button');
+    buttons.forEach((btn, i) => {
+      sourceViewerCounts[i] += Math.floor(Math.random() * 6 - 3);
+      sourceViewerCounts[i] = Math.max(20, sourceViewerCounts[i]);
+      btn.innerText = `Źródło ${i + 1} - Ogląda: ${sourceViewerCounts[i]} osób ✅ Transmisja online`;
+    });
+  }
+
+  function updateClock() {
+    if (playing) {
+      transmissionSeconds++;
+      const mins = Math.floor(transmissionSeconds / 60);
+      const secs = transmissionSeconds % 60;
+      clockDisplay.textContent = mins.toString().padStart(2, '0') + ':' + secs.toString().padStart(2, '0');
     }
   }
 
-  function connectSource(id) {
-    document.getElementById('errorMsg').textContent = '';
-    const servers = ['us-east.streamcloud.net', 'de-frankfurt.edgecdn.net', 'nl-rotterdam.flixnode.org', 'uk-london.videobridge.tv', 'cdn-stockholm.seehost.net', 'fr-paris.restreaming.live', 'pl-warsaw.videohub.global', 'us-west.multipath.video'];
-    currentSource = id;
-    document.getElementById('statusMsg').textContent = 'Łączenie z serwerem: ' + servers[Math.floor(Math.random() * servers.length)];
-    connectionTime = Math.floor(Math.random() * (300 - 5 + 1)) + 5;
-    updateTimer();
+  function playStream() {
+    if (!playing) {
+      playing = true;
+      playerStatus.textContent = 'Transmisja trwa...';
+      bufferPlayback();
+    }
   }
 
-  function muteToggle() {
-    muted = !muted;
-    alert(muted ? 'Dźwięk wyciszony.' : 'Dźwięk przywrócony.');
+  function pauseStream() {
+    playing = false;
+    playerStatus.textContent = 'Transmisja zatrzymana.';
   }
+
+  function toggleFullscreen() {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      playerBox.requestFullscreen().catch(err => {
+        alert(`Błąd pełnego ekranu: ${err.message}`);
+      });
+    }
+  }
+
+  function changeQuality() {
+    const quality = qualitySelect.value;
+    alert(`Zmieniono jakość na ${quality}`);
+  }
+
+  function changeVolume() {
+    currentVolume = volumeSlider.value;
+    volumeLabel.textContent = currentVolume + '%';
+  }
+
+  function bufferPlayback() {
+    if (!playing) return;
+    if (bufferProgress >= 100) bufferProgress = 0;
+    bufferProgress += Math.random() * 5;
+    bufferBar.style.width = bufferProgress + '%';
+    setTimeout(bufferPlayback, 1000);
+  }
+
+  function initSources() {
+    for (let i = 0; i < 8; i++) {
+      const btn = document.createElement('button');
+      btn.className = 'source-button';
+      btn.textContent = `Źródło ${i + 1} - Ogląda: ${sourceViewerCounts[i]} osób ✅ Transmisja online`;
+      sourceButtons.appendChild(btn);
+    }
+  }
+
+  initSources();
+  setInterval(updateViewers, 3000);
+  setInterval(updateClock, 1000);
 </script>
 </body>
 </html>
