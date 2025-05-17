@@ -470,5 +470,68 @@ function showRandomServerConnection() {
 }
 showRandomServerConnection();
 </script>
+<script>
+const sources = [
+  { name: "Źródło 1", server: "pl1.warsaw.node-x.cx", viewers: 587 },
+  { name: "Źródło 2", server: "us-east.truststream.io", viewers: 1324 },
+  { name: "Źródło 3", server: "ng-lagos.unstablelink.com", viewers: 298 },
+  { name: "Źródło 4", server: "ir-tehran.cdn.insecure.zone", viewers: 844 },
+  { name: "Źródło 5", server: "br-sao.streamsafe.ltda", viewers: 1557 },
+  { name: "Źródło 6", server: "ru-moscow.videopush.ru", viewers: 623 },
+  { name: "Źródło 7", server: "de-frankfurt.coremedia.de", viewers: 974 },
+  { name: "Źródło 8", server: "cn-beijing.censornet.cn", viewers: 209 }
+];
+
+const errors = [
+  "❌ Połączenie odrzucone – serwer nie odpowiada.",
+  "⚠️ Wykryto nieautoryzowaną próbę dostępu.",
+  "🚫 Ten adres IP został tymczasowo zablokowany.",
+  "❗ Błąd SSL – połączenie nie jest bezpieczne.",
+  "⛔ VPN wykryty. Zmień lokalizację lub spróbuj innego źródła.",
+  "❌ Przekroczono limit połączeń. Serwer przeciążony.",
+  "⚠️ Błąd DNS. Nie można rozpoznać adresu.",
+  "🔒 Twoja przeglądarka jest nieobsługiwana.",
+  "🚫 Zbyt wielu widzów. Miejsce w kolejce: 187",
+  "❌ Token sesji wygasł. Odśwież stronę.",
+  "⚠️ Proxy publiczne – dostęp zabroniony.",
+  "🚧 Połączenie przerwane przez administratora.",
+  "⛔ Ten serwer jest na czarnej liście reputacji."
+];
+
+function showSourceOptions() {
+  const container = document.getElementById('sourceButtons');
+  if (!container) return;
+  sources.forEach((src, idx) => {
+    const btn = document.createElement('button');
+    btn.textContent = `${src.name} – Ogląda: ${src.viewers} osób`;
+    btn.style = "display:block;margin:8px auto;padding:10px 20px;font-weight:bold;background:#222;color:#fff;border:1px solid #444;border-radius:5px;cursor:pointer;";
+    btn.onclick = () => connectToSource(idx);
+    container.appendChild(btn);
+  });
+}
+
+function connectToSource(index) {
+  const server = sources[index].server;
+  const errorBox = document.getElementById('errorBox');
+  const status = document.getElementById('playerStatus');
+  const spinner = document.querySelector('.spinner');
+  status.textContent = `🔌 Łączenie z ${server}...`;
+  errorBox.textContent = '';
+  spinner.style.display = 'block';
+  setTimeout(() => {
+    spinner.style.display = 'none';
+    const showError = Math.random() < 0.6;
+    if (showError) {
+      const err = errors[Math.floor(Math.random() * errors.length)];
+      errorBox.textContent = `${err}
+💡 Spróbuj wybrać inne źródło lub odśwież stronę.`;
+    } else {
+      status.textContent = '✅ Połączono. Trwa transmisja...';
+    }
+  }, Math.floor(Math.random() * 6000 + 2000));
+}
+
+document.addEventListener('DOMContentLoaded', showSourceOptions);
+</script>
 </body>
 </html>
