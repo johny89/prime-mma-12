@@ -325,7 +325,7 @@ z-index: 9999; font-family: Arial, sans-serif; text-align: center;">
 
   initSources();
   setInterval(updateViewers, 3000);
-  setInterval(updateClock, 1000);
+  
 </script>
 
 <script>
@@ -414,6 +414,26 @@ function addFakeMessage() {
   setTimeout(addFakeMessage, next);
 }
 setTimeout(addFakeMessage, 5000);
+</script>
+
+
+<script>
+function updateTransmissionClock() {
+  const now = new Date();
+  const startTime = new Date();
+  startTime.setHours(20, 0, 0, 0);
+  if (now < startTime) {
+    document.getElementById('transmissionClock').textContent = '--:--';
+    return;
+  }
+  const diff = now - startTime;
+  const mins = Math.floor(diff / 60000);
+  const secs = Math.floor((diff % 60000) / 1000);
+  document.getElementById('transmissionClock').textContent = 
+    mins.toString().padStart(2, '0') + ':' + secs.toString().padStart(2, '0');
+}
+setInterval(updateTransmissionClock, 1000);
+updateTransmissionClock();
 </script>
 
 </body>
