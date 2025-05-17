@@ -96,14 +96,9 @@
   }
 }
 
-body {
-  background: linear-gradient(270deg, #0a0a0a, #1c1c1c, #0a0a0a);
-  background-size: 600% 600%;
-  animation: backgroundScroll 20s ease infinite;
-}
+body { background-color: #0a0a0a; }
 
-@keyframes backgroundScroll {
-  0% {background-position: 0% 50%;}
+
   50% {background-position: 100% 50%;}
   100% {background-position: 0% 50%;}
 }
@@ -131,35 +126,26 @@ body.light-mode .error-message {
   color: #222;
 }
 
+
+@keyframes glowSpin {
+  0% { box-shadow: 0 0 5px #ff2e63, 0 0 10px #ff2e63; transform: rotate(0deg); }
+  50% { box-shadow: 0 0 20px #ff2e63, 0 0 40px #ff2e63; }
+  100% { box-shadow: 0 0 5px #ff2e63, 0 0 10px #ff2e63; transform: rotate(360deg); }
+}
+.player.buffering {
+  animation: glowSpin 2s infinite linear;
+}
+
 </style>
 </head>
 <body>
 
-<div style="margin: 20px auto; max-width: 960px; text-align: center;">
-  <button onclick="sendHeart()" style="
-    background-color: #e60073;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 50px;
-    cursor: pointer;
-    font-weight: bold;
-    margin-bottom: 10px;
-  ">💗 Wyślij serduszko</button>
-  <div id="heartCount" style="color: #ff80bf; font-size: 20px;">💗 Serduszek: 0</div>
+
 </div>
 
 
 
-<div style="max-width: 960px; margin: 30px auto; background: #111; padding: 15px; border-radius: 8px; border: 1px solid #333;">
-  <h3 style="text-align: center; color: #ffcc00;">💬 Czat transmisji</h3>
-  <div id="chatBox" style="background: #000; color: #fff; height: 200px; overflow-y: scroll; padding: 10px; border: 1px solid #444; margin-bottom: 10px; font-family: monospace;"></div>
-  <input type="text" id="chatInput" placeholder="Napisz wiadomość..." style="width: 80%; padding: 10px; font-size: 14px;">
-  <button onclick="sendChat()" style="padding: 10px 15px; font-weight: bold; font-size: 14px; background: #ff2e63; color: white; border: none; border-radius: 5px; cursor: pointer;">Wyślij</button>
-</div>
-
-<div id="alertBox" style="
+<div style="display:none;" id="alertBox" style="
   position: fixed;
   top: 20px;
   right: 20px;
@@ -206,7 +192,7 @@ z-index: 9999; font-family: Arial, sans-serif; text-align: center;">
 </div>
 
   <div class="branding">🔥 PRIME MMA 12 – Gala na żywo</div>
-  <div class="player" id="playerBox">
+  <div class="player buffering" id="playerBox">
     <div id="bufferBar" class="buffer-bar"></div>
     <p style="padding-top: 240px;" id="playerStatus">Transmisja buforuje...</p>
   </div>
@@ -226,7 +212,10 @@ z-index: 9999; font-family: Arial, sans-serif; text-align: center;">
   </div>
 
   <div class="transmission-time">⏱️ Czas trwania transmisji: <span id="transmissionClock">00:00</span></div>
-  <div class="viewer-count" id="mainViewerCount">👁️ Oglądających: <span id="mainViewer">0</span></div>
+  
+<div class="transmission-time" style="color:#99ffcc;">⌛ Pozostały czas transmisji: <span id="transmissionEndClock">--:--:--</span></div>
+
+<div class="viewer-count" id="mainViewerCount">👁️ Oglądających: <span id="mainViewer">0</span></div>
 
   <div class="controls" id="sourceButtons">
     <!-- Źródła będą dodawane dynamicznie -->
@@ -357,66 +346,6 @@ setInterval(updateLocalTime, 1000);
 updateLocalTime();
 </script>
 
-
-<script>
-let heartTotal = 0;
-
-function sendHeart() {
-  heartTotal++;
-  document.getElementById('heartCount').textContent = '💗 Serduszek: ' + heartTotal;
-  showAlert('💥 Nowe serduszko od widza!');
-}
-
-function showAlert(message) {
-  const alertBox = document.getElementById('alertBox');
-  alertBox.textContent = message;
-  alertBox.style.display = 'block';
-  setTimeout(() => {
-    alertBox.style.display = 'none';
-  }, 3000);
-}
-</script>
-
-
-<script>
-const chatBox = document.getElementById('chatBox');
-const chatInput = document.getElementById('chatInput');
-
-function sendChat() {
-  const msg = chatInput.value.trim();
-  if (msg !== '') {
-    const el = document.createElement('div');
-    el.textContent = '🗨️ Widz: ' + msg;
-    chatBox.appendChild(el);
-    chatBox.scrollTop = chatBox.scrollHeight;
-    chatInput.value = '';
-  }
-}
-
-// Automatyczne wiadomości co jakiś czas
-const fakeMessages = [
-  "Ale wejście Murańskiego! 🔥",
-  "To będzie wojna!",
-  "Prime MMA to sztos 💯",
-  "Kto wygra main event?",
-  "Dajcie link do transmisji 😅",
-  "Sędzia coś przegapił?",
-  "Kto tu od początku? 👋"
-];
-
-function addFakeMessage() {
-  const el = document.createElement('div');
-  const msg = fakeMessages[Math.floor(Math.random() * fakeMessages.length)];
-  el.textContent = '💬 Fan: ' + msg;
-  chatBox.appendChild(el);
-  chatBox.scrollTop = chatBox.scrollHeight;
-  const next = Math.floor(Math.random() * 10000) + 4000;
-  setTimeout(addFakeMessage, next);
-}
-setTimeout(addFakeMessage, 5000);
-</script>
-
-
 <script>
 function updateTransmissionClock() {
   const now = new Date();
@@ -434,6 +363,29 @@ function updateTransmissionClock() {
 }
 setInterval(updateTransmissionClock, 1000);
 updateTransmissionClock();
+</script>
+
+
+<script>
+function updateEndClock() {
+  const now = new Date();
+  const endTime = new Date();
+  endTime.setHours(24, 0, 0, 0);
+  const diff = endTime - now;
+  if (diff <= 0) {
+    document.getElementById('transmissionEndClock').textContent = "00:00:00";
+    return;
+  }
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+  document.getElementById('transmissionEndClock').textContent =
+    hours.toString().padStart(2, '0') + ':' +
+    minutes.toString().padStart(2, '0') + ':' +
+    seconds.toString().padStart(2, '0');
+}
+setInterval(updateEndClock, 1000);
+updateEndClock();
 </script>
 
 </body>
