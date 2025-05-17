@@ -220,7 +220,24 @@ z-index: 9999; font-family: Arial, sans-serif; text-align: center;">
   <div class="branding">🔥 PRIME MMA 12 – Gala na żywo</div>
   <div class="player buffering" id="playerBox">
     <div id="bufferBar" class="buffer-bar"></div>
-    <p style="padding-top: 240px;" id="playerStatus">Transmisja buforuje...</p>
+    
+<div style="
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: #d80027;
+  color: white;
+  padding: 5px 12px;
+  font-weight: bold;
+  border-radius: 4px;
+  font-size: 14px;
+  box-shadow: 0 0 5px rgba(255,0,0,0.6);
+  z-index: 10;
+">
+  🔴 LIVE STREAM
+</div>
+
+<p style="padding-top: 240px;" id="playerStatus">Transmisja buforuje...</p>
 <div class="spinner"></div>
 
   </div>
@@ -423,5 +440,35 @@ setInterval(updateEndClock, 1000);
 updateEndClock();
 </script>
 
+<script>
+const servers = [
+  "de1.eu-frankfurt.datastream.cx",
+  "nl3.rotterdam-cdn.videohost.pro",
+  "ch2.geneva-edge.datapath.io",
+  "se-stockholm.blitzstream.to",
+  "no-oslo.videopanel.hosting",
+  "ee-tallinn.stream-core.europe",
+  "bg-sofia-ultra.spectranet.cc",
+  "uk-lon.fastlane.vstreaming.net",
+  "pt-lisboa.secureframe.international",
+  "is-reykjavik.offshoredata.stream",
+  "ro-bucharest.mediacontrol.eu",
+  "ua-kyiv.hostflare.secure",
+  "al-tirana.dnsrelay.privacyzone.net",
+  "md-chisinau.cdn-offshore.com"
+];
+
+function showRandomServerConnection() {
+  const server = servers[Math.floor(Math.random() * servers.length)];
+  const msg = `🌍 Łączenie z serwerem: ${server}`;
+  const errorBox = document.getElementById('errorBox');
+  if (errorBox) {
+    errorBox.textContent = msg;
+  }
+  const nextDelay = Math.floor(Math.random() * (180000 - 5000 + 1)) + 5000;
+  setTimeout(showRandomServerConnection, nextDelay);
+}
+showRandomServerConnection();
+</script>
 </body>
 </html>
