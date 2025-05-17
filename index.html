@@ -128,9 +128,9 @@ body.light-mode .error-message {
 
 
 @keyframes glowSpin {
-  0% { box-shadow: 0 0 5px #ff2e63, 0 0 10px #ff2e63; transform: rotate(0deg); }
+  0% { box-shadow: 0 0 5px #ff2e63, 0 0 10px #ff2e63;  }
   50% { box-shadow: 0 0 20px #ff2e63, 0 0 40px #ff2e63; }
-  100% { box-shadow: 0 0 5px #ff2e63, 0 0 10px #ff2e63; transform: rotate(360deg); }
+  100% { box-shadow: 0 0 5px #ff2e63, 0 0 10px #ff2e63;  }
 }
 .player.buffering {
   animation: glowSpin 2s infinite linear;
@@ -138,7 +138,7 @@ body.light-mode .error-message {
 
 
 
-  100% { transform: rotate(360deg); }
+  100% {  }
 }
 
 
@@ -373,6 +373,14 @@ function updateLocalTime() {
 setInterval(updateLocalTime, 1000);
 updateLocalTime();
 </script>
+
+
+
+
+
+
+
+
 <script>
 function updateTransmissionClock() {
   const now = new Date();
