@@ -1,9 +1,8 @@
-
 <!DOCTYPE html>
 <html lang="pl">
 <head>
   <meta charset="UTF-8">
-  <title>Prime MMA 12 - Transmisja na żywo</title>
+  <title>Prime MMA 12 - Podziękowanie</title>
   <style>
     body {
       background-color: #0a0a0a;
@@ -12,416 +11,53 @@
       text-align: center;
       padding: 30px;
     }
-    .branding {
-      font-size: 28px;
-      font-weight: bold;
-      color: #ff2e63;
-      margin-bottom: 10px;
-    }
-    .player {
-      position: relative;
-      background: #000 url('https://upload.wikimedia.org/wikipedia/commons/7/7f/Black_background.jpg') center center no-repeat;
-      background-size: cover;
-      width: 90%;
-      max-width: 960px;
-      height: 540px;
-      margin: 0 auto 20px;
-      border: 4px solid #333;
-      overflow: hidden;
-    }
-    .buffer-bar {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      height: 6px;
-      background: linear-gradient(to right, #ff2e63, #ff5858);
-      width: 0%;
-      transition: width 1s linear;
-    }
-    .controls {
-      margin-top: 15px;
-    }
-    .controls button, .controls select, .controls input[type=range] {
-      background-color: #222;
-      border: 1px solid #555;
-      padding: 10px 15px;
-      color: #fff;
-      font-weight: bold;
-      border-radius: 6px;
-      cursor: pointer;
-      margin: 5px;
-    }
-    .controls button:hover, .controls select:hover {
-      background-color: #333;
-    }
-    .volume-container {
-      display: inline-block;
-      margin-left: 10px;
-    }
-    .viewer-count, .transmission-time {
-      margin-top: 10px;
-      font-size: 16px;
-      color: #ffcc00;
-    }
-    .source-button {
-      margin-top: 10px;
-      width: 90%;
-      max-width: 600px;
-      padding: 10px;
-      font-weight: bold;
-      color: #fff;
-      background-color: #222;
-      border: 1px solid #444;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .source-button:hover {
-      background-color: #333;
-    }
-  
-@media (max-width: 768px) {
-  .player {
-    height: 220px;
-  }
-  .branding {
-    font-size: 22px;
-  }
-  .controls button, .controls select, .controls input[type=range] {
-    padding: 8px 10px;
-    font-size: 14px;
-  }
-  .volume-container {
-    display: block;
-    margin: 10px auto 0;
-  }
-}
-
-body { background-color: #0a0a0a; }
-
-
-  50% {background-position: 100% 50%;}
-  100% {background-position: 0% 50%;}
-}
-
-
-body.light-mode {
-  background: #f3f3f3;
-  color: #111;
-}
-body.light-mode .player {
-  border-color: #999;
-}
-body.light-mode .controls button,
-body.light-mode .controls select,
-body.light-mode .controls input[type=range],
-body.light-mode .source-button {
-  background-color: #ddd;
-  color: #000;
-  border-color: #aaa;
-}
-body.light-mode .volume-container span,
-body.light-mode .viewer-count,
-body.light-mode .transmission-time,
-body.light-mode .error-message {
-  color: #222;
-}
-
-
-@keyframes glowSpin {
-  0% { box-shadow: 0 0 5px #ff2e63, 0 0 10px #ff2e63;  }
-  50% { box-shadow: 0 0 20px #ff2e63, 0 0 40px #ff2e63; }
-  100% { box-shadow: 0 0 5px #ff2e63, 0 0 10px #ff2e63;  }
-}
-.player.buffering {
-  animation: glowSpin 2s infinite linear;
-}
-
-
-
-  100% {  }
-}
-
-
-
-.spinner {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  border: 6px solid #ccc;
-  border-top: 6px solid #ff2e63;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  animation: spin 1s linear infinite;
-  z-index: 5;
-}
-
-@keyframes spin {
-  0% { transform: translate(-50%, -50%) rotate(0deg); }
-  100% { transform: translate(-50%, -50%) rotate(360deg); }
-}
-
-</style>
+  </style>
 </head>
 <body>
 
-
-</div>
-
-
-
-<div style="display:none;" id="alertBox" style="
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background: #ff2e63;
-  color: white;
-  padding: 12px 20px;
-  border-radius: 8px;
+<div class="player" style="position: relative; background: #000; width: 90%; max-width: 960px; height: 540px; margin: 30px auto; border: 4px solid #333;">
+  
+<div style="
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.8);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  font-size: 20px;
   font-weight: bold;
-  font-size: 16px;
-  display: none;
-  z-index: 9999;
-  box-shadow: 0 0 10px rgba(0,0,0,0.5);
-">💥 Nowe serduszko od widza!</div>
-
-
-<div style="margin: 20px auto; max-width: 960px;">
-  <button onclick="toggleTheme()" style="
-    background-color: #444;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-  ">🌗 Zmień tryb (ciemny/jasny)</button>
-  <div id="localTime" style="margin-top: 10px; color: #ccc;">🕒 Czas lokalny: --:--:--</div>
+  text-align: center;
+">
+  🛑 Transmisja została zakończona<br><br>
+  Dziękujemy za wspólne oglądanie!
 </div>
 
-
-<div style="background: #330000; color: #ff9999; padding: 15px; margin: 20px auto; max-width: 960px; border: 2px solid #660000; font-weight: bold;">
-  ⚠️ Wykryto możliwe użycie VPN lub połączenia przez serwery proxy. Transmisja może być opóźniona lub zablokowana.
-  <br><br>
-  🔗 Upewnij się, że korzystasz z oficjalnego źródła transmisji Prime MMA 12. Nie klikaj w podejrzane linki!
 </div>
 
-
-<div id="startOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-background: #000; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center;
-z-index: 9999; font-family: Arial, sans-serif; text-align: center;">
-  <img src="https://primemma.pl/wp-content/uploads/2023/07/logo-prime-mma-white.svg" alt="Prime MMA Logo" style="width: 200px; margin-bottom: 30px;" />
-  <h2 style="font-size: 26px; margin-bottom: 10px;">Transmisja rozpocznie się za:</h2>
-  <div id="countdownTimer" style="font-size: 48px; font-weight: bold;">10</div>
-</div>
-
-  <div class="branding">🔥 PRIME MMA 12 – Gala na żywo</div>
-  <div class="player buffering" id="playerBox">
-    <div id="bufferBar" class="buffer-bar"></div>
-    <p style="padding-top: 240px;" id="playerStatus">Transmisja buforuje...</p>
-<div class="spinner"></div>
-
-  </div>
-
-  <div class="controls">
-    <button onclick="playStream()">▶️ Odtwórz</button>
-    <button onclick="pauseStream()">⏸️ Zatrzymaj</button>
-    <button onclick="toggleFullscreen()">🔳 Pełny ekran</button>
-    <select id="qualitySelect" onchange="changeQuality()">
-      <option value="720p">Jakość: 720p</option>
-      <option value="1080p">Jakość: Full HD</option>
-    </select>
-    <div class="volume-container">
-      Głośność: <input type="range" min="0" max="100" value="100" id="volumeSlider" onchange="changeVolume()">
-      <span id="volumeLabel">100%</span>
-    </div>
-  </div>
-
-  <div class="transmission-time">⏱️ Czas trwania transmisji: <span id="transmissionClock">00:00</span></div>
   
-<div class="transmission-time" style="color:#99ffcc;">⌛ Pozostały czas transmisji: <span id="transmissionEndClock">--:--:--</span></div>
-
-<div class="viewer-count" id="mainViewerCount">👁️ Oglądających: <span id="mainViewer">0</span></div>
-
-  <div class="controls" id="sourceButtons">
-    <!-- Źródła będą dodawane dynamicznie -->
-  </div>
-
-<script>
-  let bufferProgress = 0;
-  let playing = false;
-  let viewerCount = Math.floor(Math.random() * 1500) + 500;
-  let currentVolume = 100;
-  let transmissionSeconds = 0;
-
-  const viewerDisplay = document.getElementById('mainViewer');
-  const playerStatus = document.getElementById('playerStatus');
-  const bufferBar = document.getElementById('bufferBar');
-  const qualitySelect = document.getElementById('qualitySelect');
-  const sourceButtons = document.getElementById('sourceButtons');
-  const volumeSlider = document.getElementById('volumeSlider');
-  const volumeLabel = document.getElementById('volumeLabel');
-  const playerBox = document.getElementById('playerBox');
-  const clockDisplay = document.getElementById('transmissionClock');
-
-  const sourceViewerCounts = Array.from({ length: 8 }, () => Math.floor(Math.random() * 2000) + 100);
-
-  function updateViewers() {
-    viewerCount += Math.floor(Math.random() * 10 - 5);
-    viewerCount = Math.max(0, viewerCount);
-    viewerDisplay.textContent = viewerCount;
-
-    const buttons = document.querySelectorAll('.source-button');
-    buttons.forEach((btn, i) => {
-      sourceViewerCounts[i] += Math.floor(Math.random() * 6 - 3);
-      sourceViewerCounts[i] = Math.max(20, sourceViewerCounts[i]);
-      btn.innerText = `Źródło ${i + 1} - Ogląda: ${sourceViewerCounts[i]} osób ✅ Transmisja online`;
-    });
-  }
-
-  function updateClock() {
-    if (playing) {
-      transmissionSeconds++;
-      const mins = Math.floor(transmissionSeconds / 60);
-      const secs = transmissionSeconds % 60;
-      clockDisplay.textContent = mins.toString().padStart(2, '0') + ':' + secs.toString().padStart(2, '0');
-    }
-  }
-
-  function playStream() {
-    if (!playing) {
-      playing = true;
-      playerStatus.textContent = 'Transmisja trwa...';
-      bufferPlayback();
-    }
-  }
-
-  function pauseStream() {
-    playing = false;
-    playerStatus.textContent = 'Transmisja zatrzymana.';
-  }
-
-  function toggleFullscreen() {
-    if (document.fullscreenElement) {
-      document.exitFullscreen();
-    } else {
-      playerBox.requestFullscreen().catch(err => {
-        alert(`Błąd pełnego ekranu: ${err.message}`);
-      });
-    }
-  }
-
-  function changeQuality() {
-    const quality = qualitySelect.value;
-    alert(`Zmieniono jakość na ${quality}`);
-  }
-
-  function changeVolume() {
-    currentVolume = volumeSlider.value;
-    volumeLabel.textContent = currentVolume + '%';
-  }
-
-  function bufferPlayback() {
-    if (!playing) return;
-    if (bufferProgress >= 100) bufferProgress = 0;
-    bufferProgress += Math.random() * 5;
-    bufferBar.style.width = bufferProgress + '%';
-    setTimeout(bufferPlayback, 1000);
-  }
-
-  function initSources() {
-    for (let i = 0; i < 8; i++) {
-      const btn = document.createElement('button');
-      btn.className = 'source-button';
-      btn.textContent = `Źródło ${i + 1} - Ogląda: ${sourceViewerCounts[i]} osób ✅ Transmisja online`;
-      sourceButtons.appendChild(btn);
-    }
-  }
-
-  initSources();
-  setInterval(updateViewers, 3000);
-  
-</script>
-
-<script>
-  let countdown = 10;
-  const countdownTimer = document.getElementById('countdownTimer');
-  const overlay = document.getElementById('startOverlay');
-  const interval = setInterval(() => {
-    countdown--;
-    countdownTimer.textContent = countdown;
-    if (countdown <= 0) {
-      clearInterval(interval);
-      overlay.style.display = 'none';
-    }
-  }, 1000);
-</script>
-
-
-<script>
-function toggleTheme() {
-  document.body.classList.toggle('light-mode');
-}
-
-function updateLocalTime() {
-  const now = new Date();
-  const timeStr = now.toLocaleTimeString();
-  document.getElementById('localTime').textContent = '🕒 Czas lokalny: ' + timeStr;
-}
-setInterval(updateLocalTime, 1000);
-updateLocalTime();
-</script>
-
-
-
-
-
-
-
-
-<script>
-function updateTransmissionClock() {
-  const now = new Date();
-  const startTime = new Date();
-  startTime.setHours(20, 0, 0, 0);
-  if (now < startTime) {
-    document.getElementById('transmissionClock').textContent = '--:--';
-    return;
-  }
-  const diff = now - startTime;
-  const mins = Math.floor(diff / 60000);
-  const secs = Math.floor((diff % 60000) / 1000);
-  document.getElementById('transmissionClock').textContent = 
-    mins.toString().padStart(2, '0') + ':' + secs.toString().padStart(2, '0');
-}
-setInterval(updateTransmissionClock, 1000);
-updateTransmissionClock();
-</script>
-
-
-<script>
-function updateEndClock() {
-  const now = new Date();
-  const endTime = new Date();
-  endTime.setHours(24, 0, 0, 0);
-  const diff = endTime - now;
-  if (diff <= 0) {
-    document.getElementById('transmissionEndClock').textContent = "00:00:00";
-    return;
-  }
-  const hours = Math.floor(diff / (1000 * 60 * 60));
-  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-  const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-  document.getElementById('transmissionEndClock').textContent =
-    hours.toString().padStart(2, '0') + ':' +
-    minutes.toString().padStart(2, '0') + ':' +
-    seconds.toString().padStart(2, '0');
-}
-setInterval(updateEndClock, 1000);
-updateEndClock();
-</script>
+<div style="
+  margin: 40px auto 20px;
+  max-width: 960px;
+  padding: 20px;
+  text-align: center;
+  font-size: 18px;
+  color: #ccffcc;
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,255,0,0.2);
+">
+  ✅ Dziękujemy za wspólne oglądanie gali <strong>PRIME MMA 12</strong>!<br><br>
+  📊 Transmisję obejrzało <strong>ponad 278 000 unikalnych użytkowników</strong> z całej Polski i świata!<br>
+  💸 Dzięki temu łącznie zaoszczędziliście <strong>miliony złotych</strong> na zakupie PPV.<br><br>
+  🙌 Mamy nadzieję, że emocji nie zabrakło – do zobaczenia na kolejnej edycji!
+</div>
 
 </body>
 </html>
